@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <title>Main page</title>
+  </head>
+  <body class="d-flex text-center">
+    <div class="container">
+      <div class="px-3">
+        <div class="card-header"><h2>Connect to Metamask</h2></div>
+        <button
+          onclick="connectMetamask()"
+          type="button"
+          class="btn btn-primary"
+        >
+          Connect to Metamask
+        </button>
+
+        <p id="accountArea"></p>
+
+        <button
+          onclick="connectContract()"
+          type="button"
+          class="btn btn-primary"
+        >
+          Connect to Contract
+        </button>
+        <p id="contractArea"></p>
+
+        <button onclick="readContract()" type="button" class="btn btn-primary">
+          Get Data from Contract
+        </button>
+        <div class="container" style="width: 18rem">
+          <div class="row">
+            <div class="col-md">
+              <p id="farmerNameArea"></p>
+            </div>
+            <div class="col-md">
+              <p id="farmerIdArea"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md">
+              <p id="lenderNameArea"></p>
+            </div>
+            <div class="col-md">
+              <p id="lenderIdArea"></p>
+            </div>
+          </div>
+          <div class="col-md">
+            <p id="amountArea"></p>
+          </div>
+          </div>
+
+          <button onclick="changeWord()" type="button" class="btn btn-primary">
+            Change Data
+          </button>
+          <br />
+          <input type="text" id="inputArea" />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let account;
+      const connectMetamask = async () => {
+        if (window.ethereum !== "undefined") {
+          const accounts = await ethereum.request({
+            method: "eth_requestAccounts",
+          });
+          account = accounts[0];
+          document.getElementById("accountArea").innerHTML = account;
+        }
+      };
+
+      //2- connect to smart contract
+      const connectContract = async () => {
+        const ABI = [
+          {
+            inputs: [
+              {
+                internalType: "string",
+                name: "_word",
+                type: "string",
+              },
+            ],
+            name: "changeamount",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "farmerId",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "farmerName",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "getamount",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "lenderId",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+          {
+            inputs: [],
+            name: "lenderName",
+            outputs: [
+              {
+                internalType: "string",
+                name: "",
+                type: "string",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+        ];
+        //contract address
+        const Address = "0xEFF2586646eD17C6cDa258F205d52B089d927f9b";
+        window.web3 = await new Web3(window.ethereum);
+        window.contract = await new window.web3.eth.Contract(ABI, Address);
+        document.getElementById("contractArea").innerHTML =
+          "Connected to smart contract";
+      };
+
+      //3-read data from smart contract
+      const readContract = async () => {
+        // const farmerName = await window.contract.methods.farmerName().call();
+        // const farmerId = await window.contract.methods.farmerId().call();
+        // const lenderName = await window.contract.methods.lenderName().call();
+        // const lenderId = await window.contract.methods.lenderId().call();
+
+        // document.getElementById("farmerNameArea").innerHTML = farmerName;
+        // document.getElementById("farmerIdArea").innerHTML = farmerId;
+        // document.getElementById("lenderNameArea").innerHTML = lenderName;
+        // document.getElementById("lenderIdArea").innerHTML = lenderId;
+        
+
+    const readAmount = async () => {
+        const amount = await window.contract.methods.getamount ().call();
+        document.getElementById("amountArea").innerHTML = amount;
+    }
+        //4-change data in smart contract
+        const sendAmount = async () => {
+        const myEntry = decument.getElementById("inputArea").value;
+        await window.contract.methods.changeamount(myEntry).send({from: account});
+
+    }
+      };
+    </script>
+  </body>
+</html>
